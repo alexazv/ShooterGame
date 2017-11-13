@@ -17,10 +17,11 @@
 
 #define BUZZ_PIN 8
 
+int analogInput = A0;
 int score;
 bool buttonPressed = false;
-byte control;
-int analogInput = A0;
+bool control;
+int enemyTimer = 50;
 
 typedef struct Entity{
   int xPos;
@@ -34,8 +35,6 @@ typedef struct Entity{
 Entity projectiles[MAX_PROJ];
 Entity enemies[MAX_EN];
 Entity ship;
-
-int previousInput = 0;
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 6);
 
@@ -102,8 +101,6 @@ void resetGame(){
     delay(2000);
   
 }
-
-int enemyTimer = 50;
 
 void loop() {
   
@@ -279,9 +276,6 @@ void drawEntity(struct Entity * current){
        lcd.setCursor(current->xPos, current->level);
        lcd.write(byte(current->charByte));
        break;
-     case MISSED:
-       current->state = ENABLED;
-       break;
      case DESTROYED:
        lcd.setCursor(current->xPos, current->level);
        lcd.write('#');
@@ -295,8 +289,6 @@ void drawEntity(struct Entity * current){
 }
 
 void readInput(){
-
-  interrupts();
   
   if(control){
     char input = Serial.read();
@@ -329,7 +321,6 @@ void readInput(){
       moveShip(UP);
       previousInput = input;
     }
-  //previousInput = input;
     
   if(buttonPressed){
     shootProjectile();
