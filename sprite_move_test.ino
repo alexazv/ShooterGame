@@ -73,7 +73,7 @@ void resetGame(){
     lcd.write("Send data-digitl");
     lcd.setCursor(0,1);
     lcd.write("Button-analog");
-    delay(20);
+    delay(100);
   }
 
   control = Serial.available();
@@ -221,9 +221,6 @@ void detectCollision(){
               projectiles[i].state = DISABLED;
               enemies[j].state = DESTROYED;
               score++;
-            } else { 
-              //projectiles[i].state = MISSED;
-              //enemies[j].state = MISSED;
             }
           }
       }
@@ -292,7 +289,6 @@ void readInput(){
   
   if(control){
     char input = Serial.read();
-    Serial.println("Recebido: " + input);
   
     switch(input){
       case 'w':
@@ -313,14 +309,12 @@ void readInput(){
 
   int input = map(analogRead(analogInput), 980, 1008, 0, 255);
   int damp = 30;
-    if(input-damp > 255/2){
+    if(input-damp > 255/2)
       moveShip(DOWN);
-      previousInput = input;
-    }
-    else if(input+damp < 255/2){
+    
+    else if(input+damp < 255/2)
       moveShip(UP);
-      previousInput = input;
-    }
+    
     
   if(buttonPressed){
     shootProjectile();
