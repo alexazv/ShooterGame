@@ -1,3 +1,9 @@
+/*
+ * @author  Alexandre Azevedo
+ * 17/11/17
+ * 
+ */
+
 #include <LiquidCrystal.h>
 
 #define MAX_PROJ 4
@@ -139,14 +145,23 @@ void loop() {
       for(int i = 0; i < MAX_EN; i++)//enemies go foward
         if(enemies[i].state == ENABLED)
          enemies[i].xPos--;     
-      
-      enemyTimer = (score/2 <= 30) ? 30-score/2 : 0;
+
+      //easy mode
+      //enemyTimer = 50 - (score%50);
+
+      //hard mode
+      if(score/5 <= 50)
+        enemyTimer = 50 - score/5;
+      else
+        enemyTimer = 0;
     }
 
     detectCollision();
     
     delay(30);
-    enemyTimer--;
+
+    if(enemyTimer != 0)
+      enemyTimer--;
   
 }
 
@@ -191,7 +206,7 @@ void  moveShip(int dir){
 
 void shootProjectile(){
 
-    for(int i = 0; i < MAX_PROJ; i++){
+    for(int i = 0; i < MAX_PROJ; i++){ //find empty space in list to create projectile
       if(projectiles[i].state == DISABLED){
        byte sprite_build[8];
        
@@ -207,6 +222,7 @@ void shootProjectile(){
         projectiles[i].level = ship.level;
         projectiles[i].xPos = 1;
         lcd.createChar(i, projectiles[i].sprite);
+        tone(BUZZ_PIN, NOTE_C3, 25);
         break;
       } 
     }
@@ -220,7 +236,7 @@ void detectCollision(){
           if(projectiles[i].yPos >= enemies[j].yPos && projectiles[i].yPos <= enemies[j].yPos+2){ //if colides, delete both projectile and enemy
               projectiles[i].state = DISABLED;
               enemies[j].state = DESTROYED;
-              score++;
+              score+= 5;
             }
           }
       }
@@ -241,7 +257,7 @@ void detectCollision(){
 void createEnemy(){
 
     for(int i = 0; i < MAX_EN; i++){
-      if(enemies[i].state == DISABLED){
+      if(enemies[i].state == DISABLED){ //find empty space in list to create enemy
        byte sprite_build[8];
 
        enemies[i].xPos = 15;
